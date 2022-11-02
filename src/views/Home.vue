@@ -1,3 +1,9 @@
+<script setup>
+import { NCard } from 'naive-ui';
+</script>
+
 <template>
-  <h1>Ini page home</h1>
+  <NCard title="Home Page">
+    <h1>Ini page home</h1>
+  </NCard>
 </template>

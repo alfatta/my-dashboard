@@ -16,6 +16,8 @@
     "@vitejs/plugin-vue": "^3.1.2",
     "@vue/test-utils": "^2.1.0",
     "jsdom": "^20.0.1",
+    "naive-ui": "^2.33.5",
+    "vfonts": "^0.0.3",
     "vite": "^3.1.8",
     "vitest": "^0.24.3"
   }

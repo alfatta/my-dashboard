@@ -1,5 +1,5 @@
 <script setup>
-import { NCard, NDataTable, NButton, NSpace } from 'naive-ui';
+import { NCard, NDataTable, NButton, NSpace, NModal, NForm, NFormItem, NInput } from 'naive-ui';
 import { h, ref, onMounted, computed } from 'vue';
 import axios from 'axios'
 
@@ -9,10 +9,39 @@ const isLoading = ref(false)
 const totalPage = ref(1)
 const perPage = 10
 
+const editId = ref(null)
+const formData = ref({
+  nama: '',
+  usia: 0,
+  jabatan: 0
+})
+
+const showModal = ref(false)
+
 const deleteLoadingId = ref(null)
 
 const onEditPegawai = (pegawai) => {
-  alert('EDIT : ' + pegawai.nama)
+  editId.value = pegawai.id
+  formData.value.nama = pegawai.nama
+  formData.value.usia = pegawai.usia
+  formData.value.jabatan = pegawai.jabatan
+  showModal.value = true
+}
+
+const resetForm = () => {
+  editId.value = null
+  formData.value.nama = ''
+  formData.value.usia = 0
+  formData.value.jabatan = 0
+  showModal.value = false
+}
+
+const onSubmitForm = () => {
+  if (editId.value) {
+    editPegawai()
+  } else {
+    insertPegawai()
+  }
 }
 
 const onDeletePegawai = (pegawai) => {
@@ -21,6 +50,32 @@ const onDeletePegawai = (pegawai) => {
   }
 }
 
+const insertPegawai = () => {
+  axios({
+    method: 'post',
+    baseURL: 'https://10c6-140-213-134-214.ngrok.io',
+    url: '/pegawai',
+    data: formData.value
+  }).then((response) => {
+    resetForm()
+    getPegawai(1)
+  }).catch((error) => {
+    console.log(error.message)
+  })
+}
+const editPegawai = () => {
+  axios({
+    method: 'patch',
+    baseURL: 'https://10c6-140-213-134-214.ngrok.io',
+    url: '/pegawai/' + editId.value,
+    data: formData.value
+  }).then((response) => {
+    resetForm()
+    getPegawai(currentPage.value)
+  }).catch((error) => {
+    console.log(error.message)
+  })
+}
 const deletePegawai = (id) => {
   deleteLoadingId.value = id
   axios({
@@ -44,7 +99,9 @@ const getPegawai = (page) => {
     url: '/pegawai',
     params: {
       _page: page,
-      _limit: perPage
+      _limit: perPage,
+      _sort: 'id',
+      _order: 'desc'
     }
   }).then((response) => {
     totalPage.value = Math.ceil(response.headers['x-total-count'] / perPage)
@@ -109,6 +166,7 @@ const handlePageChange = (page) => {
 
 <template>
   <NCard title="Pegawai">
+    <NButton @click="showModal = true">Add New</NButton>
     <NDataTable 
       remote
       :loading="isLoading"
@@ -117,4 +175,28 @@ const handlePageChange = (page) => {
       :pagination="pagination"
       @update:page="handlePageChange" />
   </NCard>
+  <NModal v-model:show="showModal">
+    <NCard style="width: 50%" title="Data Pegawai">
+      <NForm
+        @submit.prevent="onSubmitForm"
+        :model="formData"
+        label-placement="left"
+        label-width="auto"
+        require-mark-placement="right-hanging"
+        size="medium">
+        <NFormItem label="Nama" path="nama">
+          <NInput v-model:value="formData.nama" />
+        </NFormItem>
+        <NFormItem label="Usia" path="usia">
+          <NInput v-model:value.number="formData.usia" />
+        </NFormItem>
+        <NFormItem label="Jabatan" path="jabatan">
+          <NInput v-model:value.number="formData.jabatan" />
+        </NFormItem>
+        <NFormItem label="&nbsp;">
+          <NButton type="info" ghost attr-type="submits">Save</NButton>
+        </NFormItem>
+      </NForm>
+    </NCard>
+  </NModal>
 </template>

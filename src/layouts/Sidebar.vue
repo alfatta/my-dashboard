@@ -4,7 +4,8 @@ import { h } from 'vue';
 import { RouterLink } from 'vue-router';
 
 const menus = [
-  { title: 'Home', to: '/' }
+  { title: 'Home', to: '/' },
+  { title: 'Pegawai', to: '/pegawai' },
 ]
 
 const menuOptions = menus.map((menu) => {

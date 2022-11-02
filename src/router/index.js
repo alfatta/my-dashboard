@@ -8,6 +8,11 @@ const router = createRouter({
       name: "home",
       component: () => import("../views/Home.vue"),
     },
+    {
+      path: "/pegawai",
+      name: "pegawai",
+      component: () => import("../views/Pegawai.vue"),
+    },
   ],
 });
 

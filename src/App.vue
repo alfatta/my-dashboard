@@ -16,7 +16,7 @@ import Footer from './layouts/Footer.vue';
     <NLayout style="min-height: 100vh;">
       <Header />
       <NLayoutContent 
-        content-style="padding: 24px;">
+        content-style="padding: 24px; padding-bottom: 100px">
         <RouterView />
       </NLayoutContent>
       <Footer />

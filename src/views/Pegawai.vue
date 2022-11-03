@@ -2,12 +2,14 @@
 import { NCard, NDataTable, NButton, NSpace, NModal, NForm, NFormItem, NInput } from 'naive-ui';
 import { h, ref, onMounted, computed } from 'vue';
 import axios from 'axios'
+axios.defaults.baseURL = 'https://10c6-140-213-134-214.ngrok.io'
 
 const data = ref([])
 const currentPage = ref(1)
 const isLoading = ref(false)
 const totalPage = ref(1)
 const perPage = 10
+const filter = ref()
 
 const editId = ref(null)
 const formData = ref({
@@ -53,7 +55,7 @@ const onDeletePegawai = (pegawai) => {
 const insertPegawai = () => {
   axios({
     method: 'post',
-    baseURL: 'https://10c6-140-213-134-214.ngrok.io',
+    // baseURL: 'https://10c6-140-213-134-214.ngrok.io',
     url: '/pegawai',
     data: formData.value
   }).then((response) => {
@@ -66,7 +68,7 @@ const insertPegawai = () => {
 const editPegawai = () => {
   axios({
     method: 'patch',
-    baseURL: 'https://10c6-140-213-134-214.ngrok.io',
+    // baseURL: 'https://10c6-140-213-134-214.ngrok.io',
     url: '/pegawai/' + editId.value,
     data: formData.value
   }).then((response) => {
@@ -80,7 +82,7 @@ const deletePegawai = (id) => {
   deleteLoadingId.value = id
   axios({
     method: 'delete',
-    baseURL: 'https://10c6-140-213-134-214.ngrok.io',
+    // baseURL: 'https://10c6-140-213-134-214.ngrok.io',
     url: '/pegawai/' + id
   }).then((response) => {
     getPegawai(currentPage.value)
@@ -95,17 +97,21 @@ const getPegawai = (page) => {
   isLoading.value = true
   axios({
     method: 'get',
-    baseURL: 'https://10c6-140-213-134-214.ngrok.io',
+    // baseURL: 'https://10c6-140-213-134-214.ngrok.io',
     url: '/pegawai',
     params: {
       _page: page,
       _limit: perPage,
       _sort: 'id',
-      _order: 'desc'
+      _order: 'desc',
+      nama: filter.value
     }
   }).then((response) => {
     totalPage.value = Math.ceil(response.headers['x-total-count'] / perPage)
-    data.value = response.data
+    data.value = response.data.map((item, i) => {
+      item.no = ((page - 1) * 10) + (i + 1)
+      return item
+    })
   }).catch((error) => {
     console.log(error.message)
   }).finally(() => {
@@ -118,7 +124,7 @@ onMounted(() => {
 })
 
 const columns = [
-  { title: "No", key: 'id', size: 2 },
+  { title: "No", key: 'no', size: 2 },
   { title: "Nama", key: 'nama' },
   { title: "Usia", key: 'usia' },
   { title: "Jabatan", key: 'jabatan' },
